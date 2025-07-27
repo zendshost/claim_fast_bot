@@ -1,0 +1,26 @@
+{
+  "name": "pi-claim-transfer-bot",
+  "version": "1.0.0",
+  "description": "Bot untuk klaim dan transfer saldo Pi Network secara otomatis dan cepat",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "bip39": "^3.1.0",
+    "dotenv": "^16.3.1",
+    "ed25519-hd-key": "^1.0.1",
+    "stellar-sdk": "^10.5.1"
+  },
+  "keywords": [
+    "pi-network",
+    "bot",
+    "stellar",
+    "claim",
+    "transfer",
+    "auto"
+  ],
+  "author": "zrx",
+  "license": "MIT"
+}
