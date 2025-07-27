@@ -12,15 +12,5 @@
     "dotenv": "^16.3.1",
     "ed25519-hd-key": "^1.0.1",
     "stellar-sdk": "^10.5.1"
-  },
-  "keywords": [
-    "pi-network",
-    "bot",
-    "stellar",
-    "claim",
-    "transfer",
-    "auto"
-  ],
-  "author": "zrx",
-  "license": "MIT"
+  }
 }
