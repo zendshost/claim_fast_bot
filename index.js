@@ -1,3 +1,5 @@
+// === FILE: claim_fast_bot.js ===
+
 const StellarSdk = require('stellar-sdk');
 const ed25519 = require('ed25519-hd-key');
 const bip39 = require('bip39');
@@ -16,7 +18,7 @@ const TARGET_ADDRESS = process.env.TARGET_ADDRESS;
   const claimKey = await getKeypairFromMnemonic(CLAIM_MNEMONIC);
   const sponsorKey = await getKeypairFromMnemonic(SPONSOR_MNEMONIC);
 
-  console.log(`🚀 Bot dimulai. Akun: ${claimKey.publicKey()}`);
+  console.log(`\u{1F680} Bot dimulai. Akun: ${claimKey.publicKey()}`);
 
   while (true) {
     try {
@@ -28,26 +30,27 @@ const TARGET_ADDRESS = process.env.TARGET_ADDRESS;
         try {
           const txClaim = await buildClaimTx(balance.id, claimKey, sponsorKey);
           await sendTransaction(txClaim);
-          console.log(`✅ Berhasil klaim ${balance.amount} PI`);
+          console.log(`\u{2705} Berhasil klaim ${balance.amount} PI`);
 
           const txTransfer = await buildTransferTx(claimKey, sponsorKey, TARGET_ADDRESS);
           await sendTransaction(txTransfer);
-          console.log(`📦 Transfer ${TARGET_ADDRESS} sukses`);
+          console.log(`\u{1F4E6} Transfer ${TARGET_ADDRESS} sukses`);
         } catch (err) {
           if (err.response?.data?.extras?.result_codes?.operations?.includes("op_claimable_balance_claimant_invalid")) {
-            console.warn("⚠️ Gagal klaim: Sudah diklaim bot lain");
+            console.warn("\u{26A0}\u{FE0F} Gagal klaim: Sudah diklaim bot lain");
           } else {
-            console.error("❌ Error klaim/transfer:", err.message);
+            console.error("\u{274C} Error klaim/transfer:", err.message);
           }
         }
       }
     } catch (err) {
-      console.error("🌐 Gagal ambil saldo:", err.message);
+      console.error("\u{1F310} Gagal ambil saldo:", err.message);
     }
   }
 })();
 
-// 🔐 Ambil keypair dari mnemonic
+// === Helper functions ===
+
 async function getKeypairFromMnemonic(mnemonic) {
   if (!bip39.validateMnemonic(mnemonic)) throw new Error("Mnemonic tidak valid!");
   const seed = await bip39.mnemonicToSeed(mnemonic);
@@ -55,13 +58,11 @@ async function getKeypairFromMnemonic(mnemonic) {
   return StellarSdk.Keypair.fromRawEd25519Seed(derived);
 }
 
-// 🌐 Ambil daftar claimable_balances
 async function getClaimableBalances(address) {
   const res = await axios.get(`${PI_HORIZON}/claimable_balances?claimant=${address}&limit=200&order=asc`);
   return res.data._embedded?.records || [];
 }
 
-// ⏱️ Cek apakah bisa diklaim sekarang
 function isClaimableNow(claimants, address) {
   const me = claimants.find(c => c.destination === address);
   if (!me) return false;
@@ -70,7 +71,6 @@ function isClaimableNow(claimants, address) {
   return !notBefore || now > parseInt(notBefore);
 }
 
-// 🧾 Build transaksi klaim
 async function buildClaimTx(balanceId, claimKey, sponsorKey) {
   const account = await server.loadAccount(claimKey.publicKey());
   const fee = await server.fetchBaseFee();
@@ -89,7 +89,6 @@ async function buildClaimTx(balanceId, claimKey, sponsorKey) {
   return tx;
 }
 
-// 💸 Build transaksi transfer
 async function buildTransferTx(fromKey, sponsorKey, toAddress) {
   const account = await server.loadAccount(fromKey.publicKey());
   const fee = await server.fetchBaseFee();
@@ -116,7 +115,6 @@ async function buildTransferTx(fromKey, sponsorKey, toAddress) {
   return tx;
 }
 
-// 🚀 Submit transaksi ke jaringan
 async function sendTransaction(tx) {
   return await server.submitTransaction(tx);
 }
